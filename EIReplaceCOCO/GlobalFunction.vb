@@ -292,7 +292,7 @@ Public Class GlobalFunction
             Dim dt As New DataTable
             da.Fill(dt)
             If dt.Rows.Count > 0 Then
-                sql = "DROP PROCEDURE sp_Initial_LUBE_Stock_Inventory"
+                sql = "DROP PROCEDURE " & StoreName & ""
                 Dim conn As New SqlConnection(ConnStr)
                 conn.Open()
                 Dim cmd As New SqlCommand

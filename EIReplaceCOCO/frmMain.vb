@@ -405,6 +405,29 @@ Public Class frmMain
                     If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
                 Next
 
+                'Create sp_Import_Product_To_Inventory
+                Dim retsp As String = ""
+                Dim retdropsp As String = ClsClobalFunction.CheckExistsSP("sp_Import_Product_To_Inventory")
+                If retdropsp = "" Then
+                    retsp = CreateStoreImportPDToInvent()
+                    If retsp = "" Then
+                        Application.DoEvents()
+                        txtTransLog.Text = GetDateTime() & "Create sp_Import_Product_To_Inventory" & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "Create sp_Import_Product_To_Inventory")
+                        Threading.Thread.Sleep(100)
+                    End If
+                Else
+                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Drop sp_Import_Product_To_Inventory" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล :  Drop sp_Import_Product_To_Inventory" & retdropsp)
+                End If
+
+                If retsp <> "" Then
+                    Application.DoEvents()
+                    txtTransLog.Text = GetDateTime() & "Cant Create sp_Import_Product_To_Inventory" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Cant Create sp_Import_Product_To_Inventory" & retsp)
+                    Threading.Thread.Sleep(100)
+                End If
+
                 'call sp sp_Import_Product_To_Inventory
                 Application.DoEvents()
                 If ClsClobalFunction.CallSPImportProduct() = False Then
@@ -441,8 +464,8 @@ Public Class frmMain
                 If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
 
                 'Create sp_Initial_LUBE_Stock_Inventory
-                Dim retsp As String = ""
-                Dim retdropsp As String = ClsClobalFunction.CheckExistsSP("sp_Initial_LUBE_Stock_Inventory")
+                retsp = ""
+                retdropsp = ClsClobalFunction.CheckExistsSP("sp_Initial_LUBE_Stock_Inventory")
                 If retdropsp = "" Then
                     retsp = CreateStoreInitialLUBE()
                     If retsp = "" Then
@@ -468,11 +491,11 @@ Public Class frmMain
                 Application.DoEvents()
                 Dim ret_CallSPInitialLUBE As String = ClsClobalFunction.CallSPInitialLUBE()
                 If ret_CallSPInitialLUBE <> "" Then
-                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call 1_sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call 1_sp_Initial_LUBE_Stock_Inventory : " & ret_CallSPInitialLUBE)
+                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Initial_LUBE_Stock_Inventory : " & ret_CallSPInitialLUBE)
                 Else
-                    txtTransLog.Text = GetDateTime() & "Call 1_sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "Call 1_sp_Initial_LUBE_Stock_Inventory")
+                    txtTransLog.Text = GetDateTime() & "Call sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Call sp_Initial_LUBE_Stock_Inventory")
                 End If
                 If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
 
@@ -486,7 +509,7 @@ Public Class frmMain
                         Dim _file As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).FullName
                         Dim _file_name As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).Name
 
-                        If _file_name.ToLower <> "1_sp_Initial_LUBE_Stock_Inventory.sql".ToLower Then
+                        If _file_name.ToLower <> "2_sp_Initial_LUBE_Stock_Inventory.sql".ToLower And _file_name.ToLower <> "1_sp_Import_Product_To_Inventory.sql".ToLower Then
                             Dim ret_RunScriptSQL As String = RunScriptSQL(_file)
                             If ret_RunScriptSQL = "" Then
                                 Application.DoEvents()
@@ -628,7 +651,22 @@ Public Class frmMain
         'True = Success , False = Fail
         Try
 
-            Dim path As String = Application.StartupPath & "\" & "Scripts\1_sp_Initial_LUBE_Stock_Inventory.sql"
+            Dim path As String = Application.StartupPath & "\" & "Scripts\2_sp_Initial_LUBE_Stock_Inventory.sql"
+            Dim ret As String = RunScriptSQL(path)
+            Return ret
+
+        Catch ex As Exception
+            Return ex.ToString
+        End Try
+
+
+    End Function
+
+    Function CreateStoreImportPDToInvent() As String
+        'True = Success , False = Fail
+        Try
+
+            Dim path As String = Application.StartupPath & "\" & "Scripts\1_sp_Import_Product_To_Inventory.sql"
             Dim ret As String = RunScriptSQL(path)
             Return ret
 
