@@ -151,7 +151,7 @@ Partial Class frmMain
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "frmMain"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "EI REPLACE COCO V3.0"
+        Me.Text = "EI REPLACE COCO V4.0"
         CType(Me.pbExit, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.pbExport, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.pbImport, System.ComponentModel.ISupportInitialize).EndInit()

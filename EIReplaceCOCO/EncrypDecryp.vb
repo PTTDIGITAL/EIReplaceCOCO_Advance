@@ -1,4 +1,5 @@
 ﻿Public Class EncrypDecryp
+
     Public Function Decrypt(ByVal s As String, Optional ByVal key As String = "") As String
         Dim rStr As String = ""
         Dim i As Integer
@@ -19,6 +20,8 @@
             ChkSum = Nothing
         End Try
     End Function
+
+
 
     Public Function base64Encode(ByVal pstr As String, Optional ByVal Password As String = "") As String
         Dim lencData_byte(pstr.Length) As Byte

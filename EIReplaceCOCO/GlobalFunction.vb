@@ -5,7 +5,7 @@ Public Class GlobalFunction
     Dim ConnStr As String = ClsConn.ConnStr
 
     Public Function GetDateTime() As String
-        Return DateTime.Now.ToString("yyyyMMdd hh:MM:ss")
+        Return DateTime.Now.ToString("yyyyMMdd H:mm:ss")
     End Function
 
     Public Function Update_APP_Config(CONFIG_KEY As String, CONFIG_VALUE As String) As Integer

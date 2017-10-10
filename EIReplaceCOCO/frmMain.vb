@@ -186,7 +186,8 @@ Public Class frmMain
 
                     If table_name = "TBUSER" Then
                         For j As Integer = 0 To dt.Rows.Count - 1
-                            dt.Rows(j)("PASSWORD") = ClsEncrypDecryp.Decrypt(dt.Rows(j)("USERNAME").ToString, dt.Rows(j)("PASSWORD").ToString)
+                            'dt.Rows(j)("PASSWORD") = ClsEncrypDecryp.Decrypt(dt.Rows(j)("USERNAME").ToString, dt.Rows(j)("PASSWORD").ToString)
+                            dt.Rows(j)("PASSWORD") = ClsEncrypDecryp.Decrypt(dt.Rows(j)("PASSWORD").ToString, dt.Rows(j)("USERNAME").ToString)
                         Next
                     End If
 
@@ -333,6 +334,15 @@ Public Class frmMain
 
             Dim dt_appconfig As New DataTable
             Dim path As String = Application.StartupPath & "\Export"
+
+            'Delete Other Data
+            Dim arr() As String = {"BKJOURNAL", "BKJOURLNAL_DETAIL", "BKJOURNAL_PAYMENT"}
+            For Each item As String In arr
+                Dim table_name As String = item
+                ClsClobalFunction.DeleteData(table_name)
+            Next
+
+            'Start to access file and import data
             If Directory.Exists(path) Then
                 For Each _file As String In Directory.GetFiles(path)
                     Dim file_name As String = System.IO.Path.GetFileName(_file)

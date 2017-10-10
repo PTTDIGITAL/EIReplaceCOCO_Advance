@@ -15,8 +15,8 @@
 
         Dim Username As String = "sa"
 
-        Dim Password As String = "1qaz@WSX"
-        'Dim Password As String = "pTT!CT01"
+        'Dim Password As String = "1qaz@WSX"
+        Dim Password As String = "pTT!CT01"
 
 
         'Dim ini As New IniReader(INIFile)
