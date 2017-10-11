@@ -11,6 +11,7 @@ Public Class frmMain
 
     Dim ClsConn As New ConnectDatabase
     Dim ConnStr As String = ClsConn.ConnStr
+    Dim ConnStrFullTax As String = ClsConn.ConnStrFullTax
     Dim ClsEncrypDecryp As New EncrypDecryp
     Dim ClsClobalFunction As New GlobalFunction
 
@@ -509,7 +510,7 @@ Public Class frmMain
                 End If
                 If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
 
-                'RunScriptSQL
+                'RunScriptSQL POSDB
                 Dim script_path As String = Application.StartupPath & "\Scripts"
                 If Directory.Exists(script_path) Then
                     Dim di As New DirectoryInfo(script_path)
@@ -519,8 +520,10 @@ Public Class frmMain
                         Dim _file As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).FullName
                         Dim _file_name As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).Name
 
-                        If _file_name.ToLower <> "2_sp_Initial_LUBE_Stock_Inventory.sql".ToLower And _file_name.ToLower <> "1_sp_Import_Product_To_Inventory.sql".ToLower Then
-                            Dim ret_RunScriptSQL As String = RunScriptSQL(_file)
+                        If _file_name.ToLower <> "2_sp_Initial_LUBE_Stock_Inventory.sql".ToLower And
+                            _file_name.ToLower <> "1_sp_Import_Product_To_Inventory.sql".ToLower And
+                             _file_name.ToLower <> "5_06_FullTaxIES_COCO.sql".ToLower Then
+                            Dim ret_RunScriptSQL As String = RunScriptSQL(_file, ConnStr)
                             If ret_RunScriptSQL = "" Then
                                 Application.DoEvents()
                                 txtTransLog.Text = GetDateTime() & "Call " & _file_name & vbCrLf & txtTransLog.Text
@@ -535,6 +538,22 @@ Public Class frmMain
                         End If
                         If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
                     Next
+                End If
+
+                'RunScriptSQL FullTaxIES
+                Dim flltax_file As String = Application.StartupPath & "\" & "Scripts\5_06_FullTaxIES_COCO.sql"
+                Dim flltax_file_name As String = "06_FullTaxIES_COCO.sql"
+                Dim ret_RunScriptFullTax As String = RunScriptSQL(flltax_file, ConnStrFullTax)
+                If ret_RunScriptFullTax = "" Then
+                    Application.DoEvents()
+                    txtTransLog.Text = GetDateTime() & "Call " & flltax_file_name & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Call " & flltax_file_name)
+                    Threading.Thread.Sleep(100)
+                Else
+                    Application.DoEvents()
+                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & "      " & ret_RunScriptFullTax)
+                    Threading.Thread.Sleep(100)
                 End If
 
 
@@ -662,7 +681,7 @@ Public Class frmMain
         Try
 
             Dim path As String = Application.StartupPath & "\" & "Scripts\2_sp_Initial_LUBE_Stock_Inventory.sql"
-            Dim ret As String = RunScriptSQL(path)
+            Dim ret As String = RunScriptSQL(path, ConnStr)
             Return ret
 
         Catch ex As Exception
@@ -677,7 +696,7 @@ Public Class frmMain
         Try
 
             Dim path As String = Application.StartupPath & "\" & "Scripts\1_sp_Import_Product_To_Inventory.sql"
-            Dim ret As String = RunScriptSQL(path)
+            Dim ret As String = RunScriptSQL(path, ConnStr)
             Return ret
 
         Catch ex As Exception
@@ -691,14 +710,14 @@ Public Class frmMain
 #End Region
 
 #Region "RunScript"
-    Function RunScriptSQL(path As String) As String
+    Function RunScriptSQL(path As String, conn As String) As String
         Dim lpcstatus_str As String = ""
-        lpcstatus_str = Me.ExecScriptFile(path)
+        lpcstatus_str = Me.ExecScriptFile(path, conn)
 
         Return lpcstatus_str
     End Function
 
-    Function ExecScriptFile(ByVal pscript_file As String) As String
+    Function ExecScriptFile(ByVal pscript_file As String, conn As String) As String
         Dim lresult_str As String = ""
         Try
             RunCommandCom("Start /min notepad """ & pscript_file & """", "", False)
@@ -710,7 +729,7 @@ Public Class frmMain
             Dim commandStrings As IEnumerable(Of String) = Regex.Split(script, "^\s*GO\s*$|^\s*GO", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
             For Each cmd As String In commandStrings
                 If (cmd.Trim() <> "") Then
-                    lresult_str = Me.ExecNoneQuery(cmd)
+                    lresult_str = Me.ExecNoneQuery(cmd, conn)
                     If (lresult_str <> "") Then
                         Exit For
                     End If
@@ -723,12 +742,12 @@ Public Class frmMain
         Return lresult_str
     End Function
 
-    Function ExecNoneQuery(ByVal psql_str As String) As String
+    Function ExecNoneQuery(ByVal psql_str As String, connS As String) As String
         Dim lresult_str As String = ""
         Dim lcomm As SqlClient.SqlCommand = Nothing
         Try
 
-            Dim conn As New SqlConnection(ConnStr)
+            Dim conn As New SqlConnection(connS)
             conn.Open()
             Dim cmd As New SqlCommand
             With cmd

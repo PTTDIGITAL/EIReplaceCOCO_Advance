@@ -4,6 +4,7 @@
     'Dim Password As String = "pTT!CT01"
     'Public INIFile As String = Application.StartupPath & "\config.ini"
     Public ConnStr As String = getConnectionString()
+    Public ConnStrFullTax As String = getConnFullTaxIES()
 
     Public Function getConnectionString() As String
 
@@ -24,6 +25,13 @@
         Return "Data Source=" & Server & ";Initial Catalog=" & Database & ";User ID=" & Username & ";Password=" & Password & ";Connect Timeout=1;"
     End Function
 
-
+    Public Function getConnFullTaxIES() As String
+        Dim Server As String = "."
+        Dim Database As String = "FullTaxIES"
+        Dim Username As String = "sa"
+        'Dim Password As String = "1qaz@WSX"
+        Dim Password As String = "pTT!CT01"
+        Return "Data Source=" & Server & ";Initial Catalog=" & Database & ";User ID=" & Username & ";Password=" & Password & ";Connect Timeout=1;"
+    End Function
 
 End Class
