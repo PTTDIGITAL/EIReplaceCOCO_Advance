@@ -104,13 +104,25 @@ Public Class GlobalFunction
     Public Function GET_TANK_NUMBER(TANK_ID As String, trans As SqlTransaction) As String
         Dim sql As String = "SELECT ET.Tank_Number FROM ENABLERDB.dbo.Tanks AS ET LEFT OUTER JOIN POSDB.dbo.TBMATERIAL AS PM ON ET.Grade_ID = PM.MAT_ID2 WHERE ET.TANK_ID = " & TANK_ID & ""
         Dim da As New SqlDataAdapter(sql, ConnStr)
-        'da.SelectCommand.Transaction = trans
         Dim dt As New DataTable
         da.Fill(dt)
 
         Dim ret As String = ""
         If dt.Rows.Count > 0 Then
             ret = dt.Rows(0)("Tank_Number").ToString
+        End If
+        Return ret
+    End Function
+
+    Public Function GET_ROLE_ID(Role_Name As String) As String
+        Dim sql As String = "SELECT ROLE_ID FROM TB_ROLE WHERE lower(ROLE_NAME) = '" & Role_Name.ToLower & "'"
+        Dim da As New SqlDataAdapter(sql, ConnStr)
+        Dim dt As New DataTable
+        da.Fill(dt)
+
+        Dim ret As String = ""
+        If dt.Rows.Count > 0 Then
+            ret = dt.Rows(0)("ROLE_ID").ToString
         End If
         Return ret
     End Function
@@ -261,26 +273,13 @@ Public Class GlobalFunction
             End If
         End If
 
-        'Dim hh As String = ""
-        'Dim mm As String = ""
-        'Dim ss As String = ""
-        'If arr_all.Length > 1 Then
-        '    Dim arr_time() As String = arr_all(1).Split(":")
-        '    If arr_time.Length = 3 Then
-        '        hh = arr_time(0)
-        '        mm = arr_time(1)
-        '        ss = arr_time(2)
-        '    End If
-
-        'End If
-
         Dim time As String = "00:00:00"
         If arr_all.Length > 1 Then
             time = arr_all(1)
         End If
 
 
-        Return "'" & y & "/" & m & "/" & d & " " & time & "'" '& hh & ":" & mm & ":" & ss & "'"
+        Return "'" & y & "/" & m & "/" & d & " " & time & "'"
     End Function
 
     Public Function CheckExistsSP(StoreName As String) As String

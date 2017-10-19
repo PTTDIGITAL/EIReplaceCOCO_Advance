@@ -139,7 +139,7 @@ Public Class frmMain
                 Dim sql As String = ""
                 Select Case table_name
                     Case "APP_DATA", "TBPOS_PUMP_ALLOW", "TBMATERIAL", "TBBOM_USAGE", "TBMATTERIAL_SITE", "TBCONVERSION", "LKMAT_GROUP3", "LKDIVISION",
-                         "TBMAT_RECOMMEND", "APP_CONFIG", "POS_CONFIG", "TBUSER", "TSJOURNAL", "TSJOURNAL_DETAIL", "TSJOURNAL_PAYMENT", "TBPAYIN_PERIOD_LOG", "TBCARD", "TBMATERIAL_HISTORY_DESC", "TSSAFTDROP"
+                         "TBMAT_RECOMMEND", "APP_CONFIG", "POS_CONFIG", "TSJOURNAL", "TSJOURNAL_DETAIL", "TSJOURNAL_PAYMENT", "TBPAYIN_PERIOD_LOG", "TBCARD", "TBMATERIAL_HISTORY_DESC", "TSSAFTDROP"
                         sql &= "SELECT * FROM " & table_name
                     Case "TBPAY_IN"
                         sql = "SELECT [PAYIN_ID] "
@@ -176,6 +176,11 @@ Public Class frmMain
 
                     Case "TBTANK_HISTORY"
                         sql &= "SELECT * FROM TBTANK_HISTORY  WHERE PERIOD_ID IN (SELECT PERIOD_ID FROM TBPERIODS WHERE DAY_ID IN (SELECT TOP 1 DAY_ID FROM TSJOURNAL))"
+                    Case "TBUSER"
+                        sql &= " SELECT U.[USERNAME],U.[PASSWORD],U.[USERDESC],U.[EXPIRE_DATE],U.[ISUSER],U.[POSITION_ID],U.[CREATEDATE],"
+                        sql &= " U.[MODDATE],U.[MODBY],P.POSITION_DESC "
+                        sql &= " From TBUSER U LEFT JOIN LKPOSITION P ON U.POSITION_ID = P.POSITION_ID"
+
                 End Select
 
                 Dim da As New SqlDataAdapter(sql, ConnStr)
@@ -187,8 +192,8 @@ Public Class frmMain
 
                     If table_name = "TBUSER" Then
                         For j As Integer = 0 To dt.Rows.Count - 1
-                            'dt.Rows(j)("PASSWORD") = ClsEncrypDecryp.Decrypt(dt.Rows(j)("USERNAME").ToString, dt.Rows(j)("PASSWORD").ToString)
                             dt.Rows(j)("PASSWORD") = ClsEncrypDecryp.Decrypt(dt.Rows(j)("PASSWORD").ToString, dt.Rows(j)("USERNAME").ToString)
+                            dt.Rows(j)("POSITION_DESC") = IIf(dt.Rows(j)("POSITION_DESC").ToString.ToLower = "system admin", "admin", dt.Rows(j)("POSITION_DESC").ToString)
                         Next
                     End If
 
@@ -725,6 +730,10 @@ Public Class frmMain
             Dim fileName As String() = pscript_file.Split("\")
             Dim script = ReadTextFromNotePad(fileName(fileName.Length - 1), 2000)
             RunCommandCom("Taskkill /IM notepad.exe", "", False)
+
+            If script.ToLower = "main window not found" Then
+                script = ReadTextFromNotePad(fileName(fileName.Length - 1).Replace(".sql", ""), 2000)
+            End If
 
             script = Regex.Replace(script, "/\*(.|\n)*?\*/", "")
             Dim commandStrings As IEnumerable(Of String) = Regex.Split(script, "^\s*GO\s*$|^\s*GO", RegexOptions.Multiline Or RegexOptions.IgnoreCase)

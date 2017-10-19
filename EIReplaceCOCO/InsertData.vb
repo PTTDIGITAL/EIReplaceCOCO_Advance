@@ -788,11 +788,12 @@ Public Class ImportData
                         End If
 
                         ISUSER = IIf(dt.Rows(i)("ISUSER").ToString = "", "null", "'" & dt.Rows(i)("ISUSER").ToString & "'")
-                        POSITION_ID = IIf(dt.Rows(i)("POSITION_ID").ToString = "", "null", "'" & dt.Rows(i)("POSITION_ID").ToString & "'")
-                        ISAUTOCLEAR = "0" 'IIf(dt.Rows(i)("ISAUTOCLEAR").ToString = "", "null", "'" & dt.Rows(i)("ISAUTOCLEAR").ToString & "'")
+                        Dim retPosition_ID As String = ClsClobalFunction.GET_ROLE_ID(dt.Rows(i)("POSITION_DESC").ToString)
+                        POSITION_ID = IIf(retPosition_ID = "", "null", "'" & retPosition_ID & "'")
+                        ISAUTOCLEAR = "0"
                         USER_ID = "29"
-                        F_NAME = "null" 'IIf(dt.Rows(i)("F_NAME").ToString = "", "null", "'" & dt.Rows(i)("F_NAME").ToString & "'")
-                        L_NAME = "null" 'IIf(dt.Rows(i)("L_NAME").ToString = "", "null", "'" & dt.Rows(i)("L_NAME").ToString & "'")
+                        F_NAME = "null"
+                        L_NAME = "null"
 
                         CREATEDATE = IIf(dt.Rows(i)("CREATEDATE").ToString = "", "null", "" & dt.Rows(i)("CREATEDATE").ToString & "")
                         If CREATEDATE <> "null" Then
