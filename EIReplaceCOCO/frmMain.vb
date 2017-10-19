@@ -193,7 +193,9 @@ Public Class frmMain
                     If table_name = "TBUSER" Then
                         For j As Integer = 0 To dt.Rows.Count - 1
                             dt.Rows(j)("PASSWORD") = ClsEncrypDecryp.Decrypt(dt.Rows(j)("PASSWORD").ToString, dt.Rows(j)("USERNAME").ToString)
-                            dt.Rows(j)("POSITION_DESC") = IIf(dt.Rows(j)("POSITION_DESC").ToString.ToLower = "system admin", "admin", dt.Rows(j)("POSITION_DESC").ToString)
+
+                            Dim retPositionDesc As String = IIf(dt.Rows(j)("POSITION_DESC").ToString.ToLower = "system admin", "admin", dt.Rows(j)("POSITION_DESC").ToString)
+                            dt.Rows(j)("POSITION_DESC") = retPositionDesc
                         Next
                     End If
 

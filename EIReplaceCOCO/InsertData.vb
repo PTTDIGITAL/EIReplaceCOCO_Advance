@@ -788,7 +788,10 @@ Public Class ImportData
                         End If
 
                         ISUSER = IIf(dt.Rows(i)("ISUSER").ToString = "", "null", "'" & dt.Rows(i)("ISUSER").ToString & "'")
-                        Dim retPosition_ID As String = ClsClobalFunction.GET_ROLE_ID(dt.Rows(i)("POSITION_DESC").ToString)
+
+                        Dim retPositionDesc As String = dt.Rows(i)("POSITION_DESC").ToString
+                        If retPositionDesc = "" Then retPositionDesc = "Cashier"
+                        Dim retPosition_ID As String = ClsClobalFunction.GET_ROLE_ID(retPositionDesc)
                         POSITION_ID = IIf(retPosition_ID = "", "null", "'" & retPosition_ID & "'")
                         ISAUTOCLEAR = "0"
                         USER_ID = "29"
