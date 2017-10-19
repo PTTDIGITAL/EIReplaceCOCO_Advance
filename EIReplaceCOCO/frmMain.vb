@@ -337,7 +337,7 @@ Public Class frmMain
             Dim path As String = Application.StartupPath & "\Export"
 
             'Delete Other Data
-            Dim arr() As String = {"BKJOURNAL", "BKJOURLNAL_DETAIL", "BKJOURNAL_PAYMENT"}
+            Dim arr() As String = {"BKJOURNAL", "BKJOURLNAL_DETAIL", "BKJOURNAL_PAYMENT", "Products", "Materials", "UnitLarge", "UnitSmall", "UnitRatio", "ProductPrice", "ProductComponent"}
             For Each item As String In arr
                 Dim table_name As String = item
                 ClsClobalFunction.DeleteData(table_name)
@@ -441,9 +441,10 @@ Public Class frmMain
 
                 'call sp sp_Import_Product_To_Inventory
                 Application.DoEvents()
-                If ClsClobalFunction.CallSPImportProduct() = False Then
+                Dim ret_CallSPImportProduct As String = ClsClobalFunction.CallSPImportProduct()
+                If ret_CallSPImportProduct <> "" Then
                     txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Import_Product_To_Inventory" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Import_Product_To_Inventory")
+                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Import_Product_To_Inventory: " & ret_CallSPImportProduct)
                 Else
                     txtTransLog.Text = GetDateTime() & "Call sp_Import_Product_To_Inventory" & vbCrLf & txtTransLog.Text
                     sw_rs.WriteLine(GetDateTime() & "Call sp_Import_Product_To_Inventory")
@@ -452,176 +453,176 @@ Public Class frmMain
 
                 'Update ISSHOWINPOS =0 , ISRECOMMEND=0
                 Application.DoEvents()
-                Dim ret0 As Integer = ClsClobalFunction.UpdateDefaultProduct()
-                txtTransLog.Text = GetDateTime() & "Update ISSHOWINPOS = 0,ISSHOWINPOS =0 (" & ret0 & " Row)" & vbCrLf & txtTransLog.Text
-                sw_rs.WriteLine(GetDateTime() & "Update ISSHOWINPOS = 0,ISSHOWINPOS =0 (" & ret0 & " Row)")
-                Threading.Thread.Sleep(100)
+                    Dim ret0 As Integer = ClsClobalFunction.UpdateDefaultProduct()
+                    txtTransLog.Text = GetDateTime() & "Update ISSHOWINPOS = 0,ISSHOWINPOS =0 (" & ret0 & " Row)" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Update ISSHOWINPOS = 0,ISSHOWINPOS =0 (" & ret0 & " Row)")
+                    Threading.Thread.Sleep(100)
 
 
-                'Update ข้อมูลที่ POSDB.dbo.PRODUCTS.ISSHOWINPOS ให้เป็น 1 เฉพาะรหัสผลิตภัณฑ์ที่มีอยู่ในตาราง POSDB.dbo.TBMATERIAL_SITE
-                Application.DoEvents()
-                Dim ret1 As Integer = ClsClobalFunction.UpdateISSHOWINPOS()
-                txtTransLog.Text = GetDateTime() & "Update ISSHOWINPOS (" & ret1 & " Row)" & vbCrLf & txtTransLog.Text
-                sw_rs.WriteLine(GetDateTime() & "Update ISSHOWINPOS (" & ret1 & " Row)")
-                Threading.Thread.Sleep(100)
+                    'Update ข้อมูลที่ POSDB.dbo.PRODUCTS.ISSHOWINPOS ให้เป็น 1 เฉพาะรหัสผลิตภัณฑ์ที่มีอยู่ในตาราง POSDB.dbo.TBMATERIAL_SITE
+                    Application.DoEvents()
+                    Dim ret1 As Integer = ClsClobalFunction.UpdateISSHOWINPOS()
+                    txtTransLog.Text = GetDateTime() & "Update ISSHOWINPOS (" & ret1 & " Row)" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Update ISSHOWINPOS (" & ret1 & " Row)")
+                    Threading.Thread.Sleep(100)
 
 
-                'Update ข้อมูลที่ POSDB.dbo.PRODUCTS.ISRECOMMEND ให้เป็น 1 เฉพาะรหัสผลิตภัณฑ์ที่มีอยู่ในตาราง POSDB.dbo.TBMAT_RECOMMENED
-                Application.DoEvents()
-                Dim ret2 As Integer = ClsClobalFunction.UpdateISRECOMMEND()
-                txtTransLog.Text = GetDateTime() & "Update ISRECOMMEND (" & ret2 & " Row)" & vbCrLf & txtTransLog.Text
-                sw_rs.WriteLine(GetDateTime() & "Update ISRECOMMEND (" & ret2 & " Row)")
-                Threading.Thread.Sleep(100)
-                If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
+                    'Update ข้อมูลที่ POSDB.dbo.PRODUCTS.ISRECOMMEND ให้เป็น 1 เฉพาะรหัสผลิตภัณฑ์ที่มีอยู่ในตาราง POSDB.dbo.TBMAT_RECOMMENED
+                    Application.DoEvents()
+                    Dim ret2 As Integer = ClsClobalFunction.UpdateISRECOMMEND()
+                    txtTransLog.Text = GetDateTime() & "Update ISRECOMMEND (" & ret2 & " Row)" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Update ISRECOMMEND (" & ret2 & " Row)")
+                    Threading.Thread.Sleep(100)
+                    If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
 
-                'Create sp_Initial_LUBE_Stock_Inventory
-                retsp = ""
-                retdropsp = ClsClobalFunction.CheckExistsSP("sp_Initial_LUBE_Stock_Inventory")
-                If retdropsp = "" Then
-                    retsp = CreateStoreInitialLUBE()
-                    If retsp = "" Then
+                    'Create sp_Initial_LUBE_Stock_Inventory
+                    retsp = ""
+                    retdropsp = ClsClobalFunction.CheckExistsSP("sp_Initial_LUBE_Stock_Inventory")
+                    If retdropsp = "" Then
+                        retsp = CreateStoreInitialLUBE()
+                        If retsp = "" Then
+                            Application.DoEvents()
+                            txtTransLog.Text = GetDateTime() & "Create sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
+                            sw_rs.WriteLine(GetDateTime() & "Create sp_Initial_LUBE_Stock_Inventory")
+                            Threading.Thread.Sleep(100)
+                        End If
+                    Else
+                        txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Drop sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล :  Drop sp_Initial_LUBE_Stock_Inventory" & retdropsp)
+                    End If
+
+                    If retsp <> "" Then
                         Application.DoEvents()
-                        txtTransLog.Text = GetDateTime() & "Create sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
-                        sw_rs.WriteLine(GetDateTime() & "Create sp_Initial_LUBE_Stock_Inventory")
+                        txtTransLog.Text = GetDateTime() & "Cant Create sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "Cant Create sp_Initial_LUBE_Stock_Inventory" & retsp)
                         Threading.Thread.Sleep(100)
                     End If
-                Else
-                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Drop sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล :  Drop sp_Initial_LUBE_Stock_Inventory" & retdropsp)
-                End If
 
-                If retsp <> "" Then
+
+                    'call sp_Initial_LUBE_Stock_Inventory
                     Application.DoEvents()
-                    txtTransLog.Text = GetDateTime() & "Cant Create sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "Cant Create sp_Initial_LUBE_Stock_Inventory" & retsp)
-                    Threading.Thread.Sleep(100)
-                End If
+                    Dim ret_CallSPInitialLUBE As String = ClsClobalFunction.CallSPInitialLUBE()
+                    If ret_CallSPInitialLUBE <> "" Then
+                        txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Initial_LUBE_Stock_Inventory : " & ret_CallSPInitialLUBE)
+                    Else
+                        txtTransLog.Text = GetDateTime() & "Call sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "Call sp_Initial_LUBE_Stock_Inventory")
+                    End If
+                    If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
 
+                    'RunScriptSQL POSDB
+                    Dim script_path As String = Application.StartupPath & "\Scripts"
+                    If Directory.Exists(script_path) Then
+                        Dim di As New DirectoryInfo(script_path)
+                        Dim files As FileSystemInfo() = di.GetFileSystemInfos()
+                        Dim orderedFiles As Array = files.OrderBy(Function(f) f.FullName).ToArray
+                        For i As Integer = 0 To orderedFiles.Length - 1
+                            Dim _file As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).FullName
+                            Dim _file_name As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).Name
 
-                'call sp_Initial_LUBE_Stock_Inventory
-                Application.DoEvents()
-                Dim ret_CallSPInitialLUBE As String = ClsClobalFunction.CallSPInitialLUBE()
-                If ret_CallSPInitialLUBE <> "" Then
-                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call sp_Initial_LUBE_Stock_Inventory : " & ret_CallSPInitialLUBE)
-                Else
-                    txtTransLog.Text = GetDateTime() & "Call sp_Initial_LUBE_Stock_Inventory" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "Call sp_Initial_LUBE_Stock_Inventory")
-                End If
-                If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
-
-                'RunScriptSQL POSDB
-                Dim script_path As String = Application.StartupPath & "\Scripts"
-                If Directory.Exists(script_path) Then
-                    Dim di As New DirectoryInfo(script_path)
-                    Dim files As FileSystemInfo() = di.GetFileSystemInfos()
-                    Dim orderedFiles As Array = files.OrderBy(Function(f) f.FullName).ToArray
-                    For i As Integer = 0 To orderedFiles.Length - 1
-                        Dim _file As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).FullName
-                        Dim _file_name As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).Name
-
-                        If _file_name.ToLower <> "2_sp_Initial_LUBE_Stock_Inventory.sql".ToLower And
+                            If _file_name.ToLower <> "2_sp_Initial_LUBE_Stock_Inventory.sql".ToLower And
                             _file_name.ToLower <> "1_sp_Import_Product_To_Inventory.sql".ToLower And
                              _file_name.ToLower <> "5_06_FullTaxIES_COCO.sql".ToLower Then
-                            Dim ret_RunScriptSQL As String = RunScriptSQL(_file, ConnStr)
-                            If ret_RunScriptSQL = "" Then
-                                Application.DoEvents()
-                                txtTransLog.Text = GetDateTime() & "Call " & _file_name & vbCrLf & txtTransLog.Text
-                                sw_rs.WriteLine(GetDateTime() & "Call " & _file_name)
-                                Threading.Thread.Sleep(100)
-                            Else
-                                Application.DoEvents()
-                                txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & vbCrLf & txtTransLog.Text
-                                sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & "      " & ret_RunScriptSQL)
-                                Threading.Thread.Sleep(100)
+                                Dim ret_RunScriptSQL As String = RunScriptSQL(_file, ConnStr)
+                                If ret_RunScriptSQL = "" Then
+                                    Application.DoEvents()
+                                    txtTransLog.Text = GetDateTime() & "Call " & _file_name & vbCrLf & txtTransLog.Text
+                                    sw_rs.WriteLine(GetDateTime() & "Call " & _file_name)
+                                    Threading.Thread.Sleep(100)
+                                Else
+                                    Application.DoEvents()
+                                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & vbCrLf & txtTransLog.Text
+                                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & "      " & ret_RunScriptSQL)
+                                    Threading.Thread.Sleep(100)
+                                End If
                             End If
-                        End If
-                        If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
-                    Next
-                End If
+                            If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
+                        Next
+                    End If
 
-                'RunScriptSQL FullTaxIES
-                Dim flltax_file As String = Application.StartupPath & "\" & "Scripts\5_06_FullTaxIES_COCO.sql"
-                Dim flltax_file_name As String = "06_FullTaxIES_COCO.sql"
-                Dim ret_RunScriptFullTax As String = RunScriptSQL(flltax_file, ConnStrFullTax)
-                If ret_RunScriptFullTax = "" Then
+                    'RunScriptSQL FullTaxIES
+                    Dim flltax_file As String = Application.StartupPath & "\" & "Scripts\5_06_FullTaxIES_COCO.sql"
+                    Dim flltax_file_name As String = "06_FullTaxIES_COCO.sql"
+                    Dim ret_RunScriptFullTax As String = RunScriptSQL(flltax_file, ConnStrFullTax)
+                    If ret_RunScriptFullTax = "" Then
+                        Application.DoEvents()
+                        txtTransLog.Text = GetDateTime() & "Call " & flltax_file_name & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "Call " & flltax_file_name)
+                        Threading.Thread.Sleep(100)
+                    Else
+                        Application.DoEvents()
+                        txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & "      " & ret_RunScriptFullTax)
+                        Threading.Thread.Sleep(100)
+                    End If
+
+
+                    'Update APP_Config
+                    If Not dt_appconfig Is Nothing AndAlso dt_appconfig.Rows.Count > 0 Then
+                        Dim cnt As Integer = 0
+                        For i As Integer = 0 To dt_appconfig.Rows.Count - 1
+                            Dim config_key As String = dt_appconfig.Rows(i)("CONFIG_KEY").ToString
+                            Dim config_value As String = dt_appconfig.Rows(i)("CONFIG_VALUE").ToString
+                            If ClsClobalFunction.Update_APP_Config(config_key, config_value) > 0 Then
+                                cnt += 1
+                            End If
+                        Next
+                        Application.DoEvents()
+                        txtTransLog.Text = GetDateTime() & "Update APP_CONFIG" & "  (" & cnt & " Row)" & vbCrLf & txtTransLog.Text
+                        sw_rs.WriteLine(GetDateTime() & "Update APP_CONFIG" & "  (" & cnt & " Row)")
+                        Threading.Thread.Sleep(100)
+                    End If
+                    If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
+
+
+                    'Copy File
+                    Dim msgcopyret As String = ""
+                    Dim ClsCopyAndReplaceFile As New CopyAndReplaceFile
+
+                    '--Copy CloseDay File
+                    Dim ret As String = ClsCopyAndReplaceFile.ReplaceCloseDayFile
+                    If ret = "" Then
+                        msgcopyret = "คัดลอกไฟล์ปิดวันสำเร็จ"
+                    Else
+                        msgcopyret = ret
+                    End If
                     Application.DoEvents()
-                    txtTransLog.Text = GetDateTime() & "Call " & flltax_file_name & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "Call " & flltax_file_name)
-                    Threading.Thread.Sleep(100)
-                Else
+                    sw_rs.WriteLine(GetDateTime() & msgcopyret)
+                    txtTransLog.Text = GetDateTime() & msgcopyret & vbCrLf & txtTransLog.Text
+                    If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
+
+                    '--Copy POSDB File
+                    ret = ClsCopyAndReplaceFile.ReplacePOSDBFile
+                    If ret = "" Then
+                        msgcopyret = "คัดลอกไฟล์ POSDB สำเร็จ"
+                    Else
+                        msgcopyret = ret
+                    End If
                     Application.DoEvents()
-                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & "      " & ret_RunScriptFullTax)
-                    Threading.Thread.Sleep(100)
-                End If
+                    sw_rs.WriteLine(GetDateTime() & msgcopyret)
+                    txtTransLog.Text = GetDateTime() & msgcopyret & vbCrLf & txtTransLog.Text
+                    If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
 
-
-                'Update APP_Config
-                If Not dt_appconfig Is Nothing AndAlso dt_appconfig.Rows.Count > 0 Then
-                    Dim cnt As Integer = 0
-                    For i As Integer = 0 To dt_appconfig.Rows.Count - 1
-                        Dim config_key As String = dt_appconfig.Rows(i)("CONFIG_KEY").ToString
-                        Dim config_value As String = dt_appconfig.Rows(i)("CONFIG_VALUE").ToString
-                        If ClsClobalFunction.Update_APP_Config(config_key, config_value) > 0 Then
-                            cnt += 1
-                        End If
-                    Next
+                    '--Copy Application Log File
+                    ret = ClsCopyAndReplaceFile.ReplaceApplicationLogFile
+                    If ret = "" Then
+                        msgcopyret = "คัดลอกไฟล์ Application Log สำเร็จ"
+                    Else
+                        msgcopyret = ret
+                    End If
                     Application.DoEvents()
-                    txtTransLog.Text = GetDateTime() & "Update APP_CONFIG" & "  (" & cnt & " Row)" & vbCrLf & txtTransLog.Text
-                    sw_rs.WriteLine(GetDateTime() & "Update APP_CONFIG" & "  (" & cnt & " Row)")
-                    Threading.Thread.Sleep(100)
-                End If
-                If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
+                    sw_rs.WriteLine(GetDateTime() & msgcopyret)
+                    txtTransLog.Text = GetDateTime() & msgcopyret & vbCrLf & txtTransLog.Text
+                    If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
 
+                    txtTransLog.Text = GetDateTime() & "สิ้นสุดการนำเข้าข้อมูล" & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "สิ้นสุดการนำเข้าข้อมูล")
 
-                'Copy File
-                Dim msgcopyret As String = ""
-                Dim ClsCopyAndReplaceFile As New CopyAndReplaceFile
-
-                '--Copy CloseDay File
-                Dim ret As String = ClsCopyAndReplaceFile.ReplaceCloseDayFile
-                If ret = "" Then
-                    msgcopyret = "คัดลอกไฟล์ปิดวันสำเร็จ"
+                    EnableButton(True)
+                    ProgressBar1.Value = 100
                 Else
-                    msgcopyret = ret
-                End If
-                Application.DoEvents()
-                sw_rs.WriteLine(GetDateTime() & msgcopyret)
-                txtTransLog.Text = GetDateTime() & msgcopyret & vbCrLf & txtTransLog.Text
-                If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
-
-                '--Copy POSDB File
-                ret = ClsCopyAndReplaceFile.ReplacePOSDBFile
-                If ret = "" Then
-                    msgcopyret = "คัดลอกไฟล์ POSDB สำเร็จ"
-                Else
-                    msgcopyret = ret
-                End If
-                Application.DoEvents()
-                sw_rs.WriteLine(GetDateTime() & msgcopyret)
-                txtTransLog.Text = GetDateTime() & msgcopyret & vbCrLf & txtTransLog.Text
-                If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
-
-                '--Copy Application Log File
-                ret = ClsCopyAndReplaceFile.ReplaceApplicationLogFile
-                If ret = "" Then
-                    msgcopyret = "คัดลอกไฟล์ Application Log สำเร็จ"
-                Else
-                    msgcopyret = ret
-                End If
-                Application.DoEvents()
-                sw_rs.WriteLine(GetDateTime() & msgcopyret)
-                txtTransLog.Text = GetDateTime() & msgcopyret & vbCrLf & txtTransLog.Text
-                If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
-
-                txtTransLog.Text = GetDateTime() & "สิ้นสุดการนำเข้าข้อมูล" & vbCrLf & txtTransLog.Text
-                sw_rs.WriteLine(GetDateTime() & "สิ้นสุดการนำเข้าข้อมูล")
-
-                EnableButton(True)
-                ProgressBar1.Value = 100
-            Else
-                Using New Centered_MessageBox(Me)
+                    Using New Centered_MessageBox(Me)
                     MessageBox.Show("ไม่พบรายการสำหรับนำเข้าข้อมูล", "", MessageBoxButtons.OK)
                 End Using
                 EnableButton(True)

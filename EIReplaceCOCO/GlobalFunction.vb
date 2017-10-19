@@ -115,7 +115,7 @@ Public Class GlobalFunction
         Return ret
     End Function
 
-    Public Function CallSPImportProduct() As Boolean
+    Public Function CallSPImportProduct() As String
         Try
             Dim sql As String = "sp_Import_Product_To_Inventory"
             Dim conn As New SqlConnection(ConnStr)
@@ -128,9 +128,9 @@ Public Class GlobalFunction
                 .ExecuteNonQuery()
             End With
             conn.Close()
-            Return True
+            Return ""
         Catch ex As Exception
-            Return False
+            Return ex.ToString
         End Try
     End Function
 

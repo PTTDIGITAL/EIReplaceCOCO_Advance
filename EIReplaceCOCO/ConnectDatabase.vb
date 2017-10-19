@@ -19,7 +19,6 @@
         'Dim Password As String = "1qaz@WSX"
         Dim Password As String = "pTT!CT01"
 
-
         'Dim ini As New IniReader(INIFile)
         'ini.Section = "Setting"
         Return "Data Source=" & Server & ";Initial Catalog=" & Database & ";User ID=" & Username & ";Password=" & Password & ";Connect Timeout=1;"

@@ -1,0 +1,11 @@
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\bin\Debug\TestRunScript.exe.config
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\bin\Debug\TestRunScript.exe
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\bin\Debug\TestRunScript.pdb
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\bin\Debug\TestRunScript.xml
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\obj\Debug\TestRunScript.vbprojResolveAssemblyReference.cache
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\obj\Debug\TestRunScript.Form1.resources
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\obj\Debug\TestRunScript.Resources.resources
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\obj\Debug\TestRunScript.vbproj.GenerateResource.Cache
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\obj\Debug\TestRunScript.exe
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\obj\Debug\TestRunScript.xml
+D:\PTT_POS\Project\EIReplaceCOCO_Advance\TestRunScript\obj\Debug\TestRunScript.pdb
