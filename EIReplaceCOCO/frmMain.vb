@@ -12,6 +12,7 @@ Public Class frmMain
     Dim ClsConn As New ConnectDatabase
     Dim ConnStr As String = ClsConn.ConnStr
     Dim ConnStrFullTax As String = ClsConn.ConnStrFullTax
+    Dim ConnStrPOSVIS As String = ClsConn.ConnStrPOSVIS
     Dim ClsEncrypDecryp As New EncrypDecryp
     Dim ClsClobalFunction As New GlobalFunction
 
@@ -528,45 +529,62 @@ Public Class frmMain
                             Dim _file As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).FullName
                             Dim _file_name As String = DirectCast(orderedFiles, System.IO.FileSystemInfo())(i).Name
 
-                            If _file_name.ToLower <> "2_sp_Initial_LUBE_Stock_Inventory.sql".ToLower And
+                        If _file_name.ToLower <> "2_sp_Initial_LUBE_Stock_Inventory.sql".ToLower And
                             _file_name.ToLower <> "1_sp_Import_Product_To_Inventory.sql".ToLower And
-                             _file_name.ToLower <> "5_06_FullTaxIES_COCO.sql".ToLower Then
-                                Dim ret_RunScriptSQL As String = RunScriptSQL(_file, ConnStr)
-                                If ret_RunScriptSQL = "" Then
-                                    Application.DoEvents()
-                                    txtTransLog.Text = GetDateTime() & "Call " & _file_name & vbCrLf & txtTransLog.Text
-                                    sw_rs.WriteLine(GetDateTime() & "Call " & _file_name)
-                                    Threading.Thread.Sleep(100)
-                                Else
-                                    Application.DoEvents()
-                                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & vbCrLf & txtTransLog.Text
-                                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & "      " & ret_RunScriptSQL)
-                                    Threading.Thread.Sleep(100)
-                                End If
+                            _file_name.ToLower <> "5_06_FullTaxIES_COCO.sql".ToLower And
+                            _file_name.ToLower <> "6_TB_Pump_Status.sql".ToLower Then
+                            Dim ret_RunScriptSQL As String = RunScriptSQL(_file, ConnStr)
+                            If ret_RunScriptSQL = "" Then
+                                Application.DoEvents()
+                                txtTransLog.Text = GetDateTime() & "Call " & _file_name & vbCrLf & txtTransLog.Text
+                                sw_rs.WriteLine(GetDateTime() & "Call " & _file_name)
+                                Threading.Thread.Sleep(100)
+                            Else
+                                Application.DoEvents()
+                                txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & vbCrLf & txtTransLog.Text
+                                sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & _file_name & "      " & ret_RunScriptSQL)
+                                Threading.Thread.Sleep(100)
                             End If
-                            If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
+                        End If
+                        If ProgressBar1.Value >= 90 Then ProgressBar1.Value = 90 Else ProgressBar1.Value = ProgressBar1.Value + 2
                         Next
                     End If
 
-                    'RunScriptSQL FullTaxIES
-                    Dim flltax_file As String = Application.StartupPath & "\" & "Scripts\5_06_FullTaxIES_COCO.sql"
-                    Dim flltax_file_name As String = "06_FullTaxIES_COCO.sql"
-                    Dim ret_RunScriptFullTax As String = RunScriptSQL(flltax_file, ConnStrFullTax)
-                    If ret_RunScriptFullTax = "" Then
-                        Application.DoEvents()
-                        txtTransLog.Text = GetDateTime() & "Call " & flltax_file_name & vbCrLf & txtTransLog.Text
-                        sw_rs.WriteLine(GetDateTime() & "Call " & flltax_file_name)
-                        Threading.Thread.Sleep(100)
-                    Else
-                        Application.DoEvents()
-                        txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & vbCrLf & txtTransLog.Text
-                        sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & "      " & ret_RunScriptFullTax)
-                        Threading.Thread.Sleep(100)
-                    End If
+                'RunScriptSQL FullTaxIES
+                Dim flltax_file As String = Application.StartupPath & "\" & "Scripts\5_06_FullTaxIES_COCO.sql"
+                Dim flltax_file_name As String = "06_FullTaxIES_COCO.sql"
+                Dim ret_RunScriptFullTax As String = RunScriptSQL(flltax_file, ConnStrFullTax)
+                If ret_RunScriptFullTax = "" Then
+                    Application.DoEvents()
+                    txtTransLog.Text = GetDateTime() & "Call " & flltax_file_name & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Call " & flltax_file_name)
+                    Threading.Thread.Sleep(100)
+                Else
+                    Application.DoEvents()
+                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & flltax_file_name & "      " & ret_RunScriptFullTax)
+                    Threading.Thread.Sleep(100)
+                End If
+
+                'RunScriptSQL POSVIS
+                Dim posvis_file As String = Application.StartupPath & "\" & "Scripts\6_TB_Pump_Status.sql"
+                Dim posvis_file_name As String = "6_TB_Pump_Status.sql"
+                Dim ret_RunScriptposvis As String = RunScriptSQL(posvis_file, ConnStrPOSVIS)
+                If ret_RunScriptposvis = "" Then
+                    Application.DoEvents()
+                    txtTransLog.Text = GetDateTime() & "Call " & posvis_file_name & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "Call " & posvis_file_name)
+                    Threading.Thread.Sleep(100)
+                Else
+                    Application.DoEvents()
+                    txtTransLog.Text = GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & posvis_file_name & vbCrLf & txtTransLog.Text
+                    sw_rs.WriteLine(GetDateTime() & "พบปัญหาในการนำเข้าข้อมูล : Call " & posvis_file_name & "      " & ret_RunScriptposvis)
+                    Threading.Thread.Sleep(100)
+                End If
 
 
-                    'Update APP_Config
-                    If Not dt_appconfig Is Nothing AndAlso dt_appconfig.Rows.Count > 0 Then
+                'Update APP_Config
+                If Not dt_appconfig Is Nothing AndAlso dt_appconfig.Rows.Count > 0 Then
                         Dim cnt As Integer = 0
                         For i As Integer = 0 To dt_appconfig.Rows.Count - 1
                             Dim config_key As String = dt_appconfig.Rows(i)("CONFIG_KEY").ToString
